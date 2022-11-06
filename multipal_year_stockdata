@@ -1,0 +1,95 @@
+Dim ws As Worksheet
+   For Each ws In ActiveWorkbook.Worksheets
+   ws.Activate
+   
+lastrow = ws.Cells(Rows.Count, 1).End(xlUp).row
+
+   Dim open_price As Double
+   Dim close_price As Double
+   Dim yearly_change As Double
+   Dim ticker As String
+   Dim percentage_change As Double
+   Dim volume As Double
+   volume = 0
+   Dim row As Long
+   row = 2
+   Dim column As Integer
+   column = 1
+   Dim i As Long
+
+   Cells(1, "i").Value = "ticker"
+   Cells(1, "j").Value = "yearly_change"
+   Cells(1, "k").Value = "percentage_change"
+   Cells(1, "l").Value = "total_stock_volume"
+   
+ open_price = Cells(2, 3).Value
+ 
+ For i = 2 To lastrow
+    
+      If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+      ticker = Cells(i, 1).Value
+      Cells(row, 9).Value = ticker
+      
+      close_price = Cells(i, 6).Value
+      
+      yearly_change = close_price - open_price
+      Cells(row, 10).Value = yearly_change
+      
+      If (open_price = 0 And close_price = 0) Then
+      percentage_change = 0
+      
+      ElseIf (open_price = 0 And close_price <> 0) Then
+      percantage_change = 1
+      
+      Else
+      percentage_change = yearly_change / open_price
+      Cells(row, 11).Value = percentage_change
+      Cells(row, 11).NumberFormat = "0.00%"
+      End If
+      
+      volume = volume + Cells(i, 7).Value
+      Cells(row, 12).Value = volume
+      
+      row = row + 1
+      open_price = Cells(i + 1, 3)
+      
+      volume = 0
+      Else
+      volume = volume + Cells(i, 7).Value
+      End If
+    Next i
+ 
+ YClastrow = ws.Cells(Rows.Count, 9).End(xlUp).row
+ 
+ For j = 2 To 3002
+     If (Cells(j, 10).Value > 0 Or Cells(j, 10).Value = 0) Then
+        Cells(j, 10).Interior.ColorIndex = 4
+     ElseIf Cells(j, 10).Value < 0 Then
+        Cells(j, 10).Interior.ColorIndex = 3
+     End If
+ Next j
+     
+ 
+ Cells(2, 15).Value = "greatest % increase"
+ Cells(3, 15).Value = "greatest % decrease"
+ Cells(4, 15).Value = "greatest total volume"
+ Cells(1, 16).Value = "ticker"
+ Cells(1, 17).Value = "value"
+     
+For Z = 2 To YClastrow
+
+      If Cells(Z, 11).Value = Application.WorksheetFunction.Max(ws.Range("k2:k" & YClastrow)) Then
+         Cells(2, 16).Value = Cells(Z, 9).Value
+         Cells(2, 17).Value = Cells(Z, 11).Value
+         Cells(2, 17).NumberFormat = "0.00%"
+      ElseIf Cells(Z, 11).Value = Application.WorksheetFunction.Min(ws.Range("k2:k" & YClastrow)) Then
+         Cells(3, 16).Value = Cells(Z, 9).Value
+         Cells(3, 17).Value = Cells(Z, 11).Value
+         Cells(3, 17).NumberFormat = "0.00%"
+      ElseIf Cells(Z, 12).Value = Application.WorksheetFunction.Max(ws.Range("k2:2" & YClastrow)) Then
+         Cells(4, 16).Value = Cells(Z, 9).Value
+         Cells(4, 17).Value = Cells(Z, 11).Value
+      End If
+ Next Z
+         
+ Next ws
